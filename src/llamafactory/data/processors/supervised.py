@@ -44,48 +44,55 @@ def _encode_supervised_example(
     cutoff_len: int,
     train_on_prompt: bool,
     mask_history: bool,
+    otherinputs={},
 ) -> Tuple[List[int], List[int]]:
-    messages = template.mm_plugin.process_messages(prompt + response, images, videos, processor)
-    input_ids, labels = template.mm_plugin.process_token_ids([], [], images, videos, tokenizer, processor)
-    encoded_pairs = template.encode_multiturn(tokenizer, messages, system, tools)
-    total_length = len(input_ids) + (1 if template.efficient_eos else 0)
-    if mask_history:
-        encoded_pairs = encoded_pairs[::-1]  # high priority for last turns
+    
+    all_input_ids = {}
+    all_labels = {}
+    otherinputs["response"] = response
+    for newprompt in otherinputs:
+        messages = template.mm_plugin.process_messages(prompt + otherinputs[newprompt], images, videos, processor)
+        input_ids, labels = template.mm_plugin.process_token_ids([], [], images, videos, tokenizer, processor)
+        encoded_pairs = template.encode_multiturn(tokenizer, messages, system, tools)
+        total_length = len(input_ids) + (1 if template.efficient_eos else 0)
+        if mask_history:
+            encoded_pairs = encoded_pairs[::-1]  # high priority for last turns
 
-    for turn_idx, (source_ids, target_ids) in enumerate(encoded_pairs):
-        if total_length >= cutoff_len:
-            break
+        for turn_idx, (source_ids, target_ids) in enumerate(encoded_pairs):
+            if total_length >= cutoff_len:
+                break
 
-        source_len, target_len = infer_seqlen(len(source_ids), len(target_ids), cutoff_len - total_length)
-        source_ids = source_ids[:source_len]
-        target_ids = target_ids[:target_len]
-        total_length += source_len + target_len
+            source_len, target_len = infer_seqlen(len(source_ids), len(target_ids), cutoff_len - total_length)
+            source_ids = source_ids[:source_len]
+            target_ids = target_ids[:target_len]
+            total_length += source_len + target_len
 
-        if train_on_prompt:
-            source_label = source_ids
-        elif template.efficient_eos:
-            source_label = [tokenizer.eos_token_id] + [IGNORE_INDEX] * (source_len - 1)
-        else:
-            source_label = [IGNORE_INDEX] * source_len
+            if train_on_prompt:
+                source_label = source_ids
+            elif template.efficient_eos:
+                source_label = [tokenizer.eos_token_id] + [IGNORE_INDEX] * (source_len - 1)
+            else:
+                source_label = [IGNORE_INDEX] * source_len
 
-        if mask_history and turn_idx != 0:  # train on the last turn only
-            target_label = [IGNORE_INDEX] * target_len
-        else:
-            target_label = target_ids
+            if mask_history and turn_idx != 0:  # train on the last turn only
+                target_label = [IGNORE_INDEX] * target_len
+            else:
+                target_label = target_ids
 
-        if mask_history:  # reversed sequences
-            input_ids = source_ids + target_ids + input_ids
-            labels = source_label + target_label + labels
-        else:
-            input_ids += source_ids + target_ids
-            labels += source_label + target_label
+            if mask_history:  # reversed sequences
+                input_ids = source_ids + target_ids + input_ids
+                labels = source_label + target_label + labels
+            else:
+                input_ids += source_ids + target_ids
+                labels += source_label + target_label
 
-    if template.efficient_eos:
-        input_ids += [tokenizer.eos_token_id]
-        labels += [tokenizer.eos_token_id]
-
-    return input_ids, labels
-
+        if template.efficient_eos:
+            input_ids += [tokenizer.eos_token_id]
+            labels += [tokenizer.eos_token_id]
+        all_input_ids[newprompt] = input_ids
+        all_labels[newprompt] = labels
+        
+    return all_input_ids, all_labels
 
 def preprocess_supervised_dataset(
     examples: Dict[str, List[Any]],
@@ -97,32 +104,39 @@ def preprocess_supervised_dataset(
     # build inputs with format `<bos> X Y <eos>` and labels with format `<ignore> ... <ignore> Y <eos>`
     # for multiturn examples, we only mask the prompt part in each prompt-response pair.
     model_inputs = defaultdict(list)
-    for i in range(len(examples["_prompt"])):
-        if len(examples["_prompt"][i]) % 2 != 1 or len(examples["_response"][i]) != 1:
-            logger.warning_rank0(
-                "Dropped invalid example: {}".format(examples["_prompt"][i] + examples["_response"][i])
-            )
+    for idx in range(len(examples["_prompt"])):
+        if len(examples["_prompt"][idx]) % 2 != 1 or len(examples["_response"][idx]) != 1:
+            # logger.warning_rank0(
+            #     "Dropped invalid example: {}".format(examples["_prompt"][i] + examples["_response"][idx])
+            # )
             continue
 
+        # new_prompts = ["llm-semantic", "user-semantic"] if data_args.fully_duplex else []
+        new_prompts = ["llm-semantic"] if data_args.fully_duplex else []
+        otherinputs = {new: examples["_"+new][idx] for new in new_prompts}
         input_ids, labels = _encode_supervised_example(
-            prompt=examples["_prompt"][i],
-            response=examples["_response"][i],
-            system=examples["_system"][i],
-            tools=examples["_tools"][i],
-            images=examples["_images"][i] or [],
-            videos=examples["_videos"][i] or [],
+            prompt=examples["_prompt"][idx],
+            response=examples["_response"][idx],
+            system=examples["_system"][idx],
+            tools=examples["_tools"][idx],
+            images=examples["_images"][idx] or [],
+            videos=examples["_videos"][idx] or [],
             template=template,
             tokenizer=tokenizer,
             processor=processor,
             cutoff_len=data_args.cutoff_len,
             train_on_prompt=data_args.train_on_prompt,
             mask_history=data_args.mask_history,
+            otherinputs=otherinputs,
         )
-        model_inputs["input_ids"].append(input_ids)
-        model_inputs["attention_mask"].append([1] * len(input_ids))
-        model_inputs["labels"].append(labels)
-        model_inputs["images"].append(examples["_images"][i])
-        model_inputs["videos"].append(examples["_videos"][i])
+        model_inputs["input_ids"].append(input_ids["response"])
+        model_inputs["attention_mask"].append([1] * len(input_ids["response"]))
+        model_inputs["labels"].append(labels["response"])
+        for new in new_prompts:
+            model_inputs["input_ids___"+new].append(input_ids[new])
+            model_inputs["labels___"+new].append(labels[new])
+        model_inputs["images"].append(examples["_images"][idx])
+        model_inputs["videos"].append(examples["_videos"][idx])
 
     return model_inputs
 

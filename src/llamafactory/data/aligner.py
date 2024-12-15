@@ -82,24 +82,26 @@ def convert_alpaca(
     example: Dict[str, Any],
     dataset_attr: "DatasetAttr",
     data_args: "DataArguments",
+    new_prompts=[],
 ) -> Dict[str, Any]:
     r"""
     Converts alpaca format dataset to the standard format.
     """
-    prompt = []
-    if dataset_attr.history and isinstance(example[dataset_attr.history], list):
-        for old_prompt, old_response in example[dataset_attr.history]:
-            prompt.append({"role": Role.USER.value, "content": old_prompt})
-            prompt.append({"role": Role.ASSISTANT.value, "content": old_response})
+    all_prompts = {}
+    for name in [dataset_attr.prompt] + new_prompts:
+        prompt = []
+        query = []
+        if name and example[name]:
+            query.append(example[name])
 
-    query = []
-    if dataset_attr.prompt and example[dataset_attr.prompt]:
-        query.append(example[dataset_attr.prompt])
+        if dataset_attr.query and example[dataset_attr.query]:
+            query.append(example[dataset_attr.query])
 
-    if dataset_attr.query and example[dataset_attr.query]:
-        query.append(example[dataset_attr.query])
-
-    prompt.append({"role": Role.USER.value, "content": "\n".join(query)})  # "prompt\nquery"
+        if "llm-" in name or "user-" in name:
+            prompt.append({"role": Role.ASSISTANT.value, "content": "\n".join(query)})  # "prompt\nquery"
+        else:
+            prompt.append({"role": Role.USER.value, "content": "\n".join(query)})  # "prompt\nquery"
+        all_prompts[name] = prompt
 
     if dataset_attr.kto_tag and isinstance(example[dataset_attr.kto_tag], bool):  # kto example
         response = [{"role": Role.ASSISTANT.value, "content": example[dataset_attr.response]}]
@@ -124,14 +126,18 @@ def convert_alpaca(
     convert_images = partial(_convert_images, dataset_attr=dataset_attr, data_args=data_args)
     convert_videos = partial(_convert_videos, dataset_attr=dataset_attr, data_args=data_args)
     output = {
-        "_prompt": prompt,
+        "_prompt": all_prompts[dataset_attr.prompt],
         "_response": response,
         "_system": example[dataset_attr.system] if dataset_attr.system else "",
         "_tools": example[dataset_attr.tools] if dataset_attr.tools else "",
         "_images": convert_images(example[dataset_attr.images]) if dataset_attr.images else None,
         "_videos": convert_videos(example[dataset_attr.videos]) if dataset_attr.videos else None,
     }
+    for name in new_prompts:
+        output["_"+name] = all_prompts[name]
     return output
+
+
 
 
 def convert_sharegpt(
@@ -243,7 +249,9 @@ def align_dataset(
         _videos: [],
     """
     if dataset_attr.formatting == "alpaca":
-        convert_func = partial(convert_alpaca, dataset_attr=dataset_attr, data_args=data_args)
+        # new_prompts = ["llm-semantic", "user-semantic"] if data_args.fully_duplex else []
+        new_prompts = ["llm-semantic"] if data_args.fully_duplex else []
+        convert_func = partial(convert_alpaca, dataset_attr=dataset_attr, data_args=data_args, new_prompts=new_prompts)
     else:
         convert_func = partial(convert_sharegpt, dataset_attr=dataset_attr, data_args=data_args)
 

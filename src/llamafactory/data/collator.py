@@ -121,9 +121,28 @@ class SFTDataCollatorWith4DAttentionMask(MultiModalDataCollatorForSeq2Seq):
     block_diag_attn: bool = False
     attn_implementation: Literal["eager", "sdpa", "flash_attention_2"] = "eager"
     compute_dtype: "torch.dtype" = torch.float32
+    fully_duplex: bool = False
 
     def __call__(self, features: Sequence[Dict[str, Any]]) -> Dict[str, "torch.Tensor"]:
+        # new_prompts = ["llm-semantic", "user-semantic"] if self.fully_duplex else []
+        new_prompts = ["llm-semantic"] if self.fully_duplex else []
+        addeddata = {}
+        for prompt in new_prompts:
+            udata = [{
+                "input_ids": features[i][f"input_ids___{prompt}"],
+                "labels": features[i][f"labels___{prompt}"],
+                "attention_mask": features[i][f"attention_mask"],
+            } for i in range(len(features))]
+            udata = super().__call__(udata)
+            udata[f"input_ids___{prompt}"] = udata["input_ids"]
+            del udata["input_ids"]
+            udata[f"labels___{prompt}"] = udata["labels"]
+            del udata["labels"]
+            addeddata[prompt] = udata
         features = super().__call__(features)
+        for prompt in new_prompts:
+            features.update(addeddata[prompt])
+            
         if self.block_diag_attn and self.attn_implementation != "flash_attention_2":
             features["attention_mask"] = prepare_4d_attention_mask(features["attention_mask"], self.compute_dtype)
 
