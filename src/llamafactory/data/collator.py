@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Sequence
 
 import torch
@@ -122,6 +122,7 @@ class SFTDataCollatorWith4DAttentionMask(MultiModalDataCollatorForSeq2Seq):
     attn_implementation: Literal["eager", "sdpa", "flash_attention_2"] = "eager"
     compute_dtype: "torch.dtype" = torch.float32
     fully_duplex: bool = False
+    new_prompts: list = field(default_factory=list)
 
     def __call__(self, features: Sequence[Dict[str, Any]]) -> Dict[str, "torch.Tensor"]:
         new_prompts = self.new_prompts if self.fully_duplex else []
