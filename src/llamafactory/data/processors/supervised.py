@@ -111,8 +111,7 @@ def preprocess_supervised_dataset(
             # )
             continue
 
-        # new_prompts = ["llm-semantic", "user-semantic"] if data_args.fully_duplex else []
-        new_prompts = ["llm-semantic"] if data_args.fully_duplex else []
+        new_prompts = data_args.new_prompts if data_args.fully_duplex else []
         otherinputs = {new: examples["_"+new][idx] for new in new_prompts}
         input_ids, labels = _encode_supervised_example(
             prompt=examples["_prompt"][idx],

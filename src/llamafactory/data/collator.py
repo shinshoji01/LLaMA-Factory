@@ -124,8 +124,7 @@ class SFTDataCollatorWith4DAttentionMask(MultiModalDataCollatorForSeq2Seq):
     fully_duplex: bool = False
 
     def __call__(self, features: Sequence[Dict[str, Any]]) -> Dict[str, "torch.Tensor"]:
-        # new_prompts = ["llm-semantic", "user-semantic"] if self.fully_duplex else []
-        new_prompts = ["llm-semantic"] if self.fully_duplex else []
+        new_prompts = self.new_prompts if self.fully_duplex else []
         addeddata = {}
         for prompt in new_prompts:
             udata = [{

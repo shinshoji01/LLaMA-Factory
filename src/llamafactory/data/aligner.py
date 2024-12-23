@@ -82,7 +82,7 @@ def convert_alpaca(
     example: Dict[str, Any],
     dataset_attr: "DatasetAttr",
     data_args: "DataArguments",
-    new_prompts=[],
+    new_prompts=[], # Additional Inputs for LLMs
 ) -> Dict[str, Any]:
     r"""
     Converts alpaca format dataset to the standard format.
@@ -249,8 +249,7 @@ def align_dataset(
         _videos: [],
     """
     if dataset_attr.formatting == "alpaca":
-        # new_prompts = ["llm-semantic", "user-semantic"] if data_args.fully_duplex else []
-        new_prompts = ["llm-semantic"] if data_args.fully_duplex else []
+        new_prompts = data_args.new_prompts if data_args.fully_duplex else []
         convert_func = partial(convert_alpaca, dataset_attr=dataset_attr, data_args=data_args, new_prompts=new_prompts)
     else:
         convert_func = partial(convert_sharegpt, dataset_attr=dataset_attr, data_args=data_args)
