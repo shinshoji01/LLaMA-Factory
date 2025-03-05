@@ -1,4 +1,104 @@
 {
+    "ft___fisher___000": {
+        "file_name": "/mntcephfs/data/audiow/shoinoue/Dataset/qwen_finetuning/fisher/000.json",
+        "columns": {
+            "prompt": "instruction",
+            "query": "input",
+            "response": "output",
+            "system": "system",
+            "history": "history"
+        }
+    },
+    "ft___fisher___001": {
+        "file_name": "/mntcephfs/data/audiow/shoinoue/Dataset/qwen_finetuning/fisher/001.json",
+        "columns": {
+            "prompt": "instruction",
+            "query": "input",
+            "response": "output",
+            "system": "system",
+            "history": "history"
+        }
+    },
+    "ft___fisher___002": {
+        "file_name": "/mntcephfs/data/audiow/shoinoue/Dataset/qwen_finetuning/fisher/002.json",
+        "columns": {
+            "prompt": "instruction",
+            "query": "input",
+            "response": "output",
+            "system": "system",
+            "history": "history"
+        }
+    },
+    "ft___fisher___003": {
+        "file_name": "/mntcephfs/data/audiow/shoinoue/Dataset/qwen_finetuning/fisher/003.json",
+        "columns": {
+            "prompt": "instruction",
+            "query": "input",
+            "response": "output",
+            "system": "system",
+            "history": "history"
+        }
+    },
+    "ft___fisher___004": {
+        "file_name": "/mntcephfs/data/audiow/shoinoue/Dataset/qwen_finetuning/fisher/004.json",
+        "columns": {
+            "prompt": "instruction",
+            "query": "input",
+            "response": "output",
+            "system": "system",
+            "history": "history"
+        }
+    },
+    "ft___fisher___005": {
+        "file_name": "/mntcephfs/data/audiow/shoinoue/Dataset/qwen_finetuning/fisher/005.json",
+        "columns": {
+            "prompt": "instruction",
+            "query": "input",
+            "response": "output",
+            "system": "system",
+            "history": "history"
+        }
+    },
+    "ft___fisher___006": {
+        "file_name": "/mntcephfs/data/audiow/shoinoue/Dataset/qwen_finetuning/fisher/006.json",
+        "columns": {
+            "prompt": "instruction",
+            "query": "input",
+            "response": "output",
+            "system": "system",
+            "history": "history"
+        }
+    },
+    "ft___fisher___007": {
+        "file_name": "/mntcephfs/data/audiow/shoinoue/Dataset/qwen_finetuning/fisher/007.json",
+        "columns": {
+            "prompt": "instruction",
+            "query": "input",
+            "response": "output",
+            "system": "system",
+            "history": "history"
+        }
+    },
+    "ft___fisher___008": {
+        "file_name": "/mntcephfs/data/audiow/shoinoue/Dataset/qwen_finetuning/fisher/008.json",
+        "columns": {
+            "prompt": "instruction",
+            "query": "input",
+            "response": "output",
+            "system": "system",
+            "history": "history"
+        }
+    },
+    "ft___fisher___009": {
+        "file_name": "/mntcephfs/data/audiow/shoinoue/Dataset/qwen_finetuning/fisher/009.json",
+        "columns": {
+            "prompt": "instruction",
+            "query": "input",
+            "response": "output",
+            "system": "system",
+            "history": "history"
+        }
+    },
     "librispeech___dev-clean": {
         "file_name": "/mntcephfs/data/audiow/shoinoue/Dataset/qwen_pretraining/librispeech/dev-clean.json",
         "columns": {
@@ -1231,106 +1331,6 @@
     },
     "fisher___Missing": {
         "file_name": "/mntcephfs/data/audiow/shoinoue/Dataset/qwen_pretraining/fisher/Missing.json",
-        "columns": {
-            "prompt": "instruction",
-            "query": "input",
-            "response": "output",
-            "system": "system",
-            "history": "history"
-        }
-    },
-    "ft___fisher___000": {
-        "file_name": "/mntcephfs/data/audiow/shoinoue/Dataset/qwen_finetuning/fisher/000.json",
-        "columns": {
-            "prompt": "instruction",
-            "query": "input",
-            "response": "output",
-            "system": "system",
-            "history": "history"
-        }
-    },
-    "ft___fisher___001": {
-        "file_name": "/mntcephfs/data/audiow/shoinoue/Dataset/qwen_finetuning/fisher/001.json",
-        "columns": {
-            "prompt": "instruction",
-            "query": "input",
-            "response": "output",
-            "system": "system",
-            "history": "history"
-        }
-    },
-    "ft___fisher___002": {
-        "file_name": "/mntcephfs/data/audiow/shoinoue/Dataset/qwen_finetuning/fisher/002.json",
-        "columns": {
-            "prompt": "instruction",
-            "query": "input",
-            "response": "output",
-            "system": "system",
-            "history": "history"
-        }
-    },
-    "ft___fisher___003": {
-        "file_name": "/mntcephfs/data/audiow/shoinoue/Dataset/qwen_finetuning/fisher/003.json",
-        "columns": {
-            "prompt": "instruction",
-            "query": "input",
-            "response": "output",
-            "system": "system",
-            "history": "history"
-        }
-    },
-    "ft___fisher___004": {
-        "file_name": "/mntcephfs/data/audiow/shoinoue/Dataset/qwen_finetuning/fisher/004.json",
-        "columns": {
-            "prompt": "instruction",
-            "query": "input",
-            "response": "output",
-            "system": "system",
-            "history": "history"
-        }
-    },
-    "ft___fisher___005": {
-        "file_name": "/mntcephfs/data/audiow/shoinoue/Dataset/qwen_finetuning/fisher/005.json",
-        "columns": {
-            "prompt": "instruction",
-            "query": "input",
-            "response": "output",
-            "system": "system",
-            "history": "history"
-        }
-    },
-    "ft___fisher___006": {
-        "file_name": "/mntcephfs/data/audiow/shoinoue/Dataset/qwen_finetuning/fisher/006.json",
-        "columns": {
-            "prompt": "instruction",
-            "query": "input",
-            "response": "output",
-            "system": "system",
-            "history": "history"
-        }
-    },
-    "ft___fisher___007": {
-        "file_name": "/mntcephfs/data/audiow/shoinoue/Dataset/qwen_finetuning/fisher/007.json",
-        "columns": {
-            "prompt": "instruction",
-            "query": "input",
-            "response": "output",
-            "system": "system",
-            "history": "history"
-        }
-    },
-    "ft___fisher___008": {
-        "file_name": "/mntcephfs/data/audiow/shoinoue/Dataset/qwen_finetuning/fisher/008.json",
-        "columns": {
-            "prompt": "instruction",
-            "query": "input",
-            "response": "output",
-            "system": "system",
-            "history": "history"
-        }
-    },
-    "ft___fisher___009": {
-        "file_name": "/mntcephfs/data/audiow/shoinoue/Dataset/qwen_finetuning/fisher/009.json",
         "columns": {
             "prompt": "instruction",
             "query": "input",

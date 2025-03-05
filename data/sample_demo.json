@@ -1,0 +1,20 @@
+[
+    {
+        "instruction": "",
+        "input": "",
+        "output": "hey what are you doing",
+        "system": "",
+        "history": [],
+        "llm-semantic": "hey what are you doing",
+        "user-semantic": "hey what are you doing"
+    },
+    {
+        "instruction": "",
+        "input": "",
+        "output": "i miss you",
+        "system": "",
+        "history": [],
+        "llm-semantic": "i miss you",
+        "user-semantic": "i miss you"
+    }
+]
